@@ -1,0 +1,41 @@
+<div class="createTask-dialog-container">
+  <h2>Create</h2>
+<h1>{{title}}</h1>
+
+<div [formGroup]="taskManagerFormGroup" class="cdd">
+
+    <mat-form-field class="form1" appearance="fill">
+        <mat-label>TaskName</mat-label>
+        <input matInput formControlName="taskName" placeholder="taskName">
+        <mat-error *ngIf="taskManagerFormGroup.controls['taskName'].hasError('required')">Name is required</mat-error>
+      </mat-form-field>
+    
+    <mat-form-field class="form2" appearance="fill">
+        <mat-label>Tags</mat-label>
+        <mat-select>
+          <mat-option value="one">Activity</mat-option>
+          <mat-option value="two">Assignment</mat-option>
+          <mat-option value="three">Project</mat-option>
+        </mat-select>
+    </mat-form-field>
+    
+    <mat-form-field class="form3" appearance="fill">
+        <mat-label>Status</mat-label>
+        <mat-select>
+          <mat-option value="one">New</mat-option>
+          <mat-option value="two">In Progress</mat-option>
+          <mat-option value="three">Completed</mat-option>
+        </mat-select>
+    </mat-form-field>
+    
+    <mat-form-field class="form4" appearance="fill">
+        <mat-label>TaskDescription</mat-label>
+        <textarea matInput formControlName="taskDescription"></textarea>
+        <mat-error *ngIf="taskManagerFormGroup.controls['taskDescription'].hasError('required')">Task Description is required</mat-error>
+    </mat-form-field>
+    
+    <button class="btncancel" mat-raised-button color="warn" (click)="closedialog()">Cancel</button>
+    <button class="btnsave" mat-raised-button color="accent" (click)="opencreatesaveDialog()" [disabled]="taskManagerFormGroup.invalid">Save</button>
+    
+    </div>
+</div>
