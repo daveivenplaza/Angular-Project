@@ -1,9 +1,23 @@
+import { TaskStatus } from "./task-status";
 export interface TaskModel {
-    id: number;
+    taskID: string;
     taskName: string;
-    taskDesciption: string;
-    completionRate: number;
-    lastModified: Date;
+    tag: TagModel;
     dateCreated: Date;
-    status: string;
+    dateModified: Date;
+    taskDescription: string;
+    status: TaskStatus;
+    dateCompleted: Date;
+  }
+
+  export interface TagModel {
+    
+    tagId: string;
+    name: string;
+    
+  }
+
+  export interface DialogParams{
+    title: string,
+    task: TaskModel
   }

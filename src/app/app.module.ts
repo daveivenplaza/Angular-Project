@@ -11,34 +11,33 @@ import { MaterialModule } from './material/material.module';
 import { TaskdeleteDialogComponent } from './task-manager/taskdelete-dialog/taskdelete-dialog.component';
 import { CreatetaskDialogComponent } from './task-manager/createtask-dialog/createtask-dialog.component';
 import { TaskupdateDialogComponent } from './task-manager/taskupdate-dialog/taskupdate-dialog.component';
-import { UpdateSaveDialogComponent } from './task-manager/taskupdate-dialog/update-save-dialog/update-save-dialog.component';
 
-import { TagsComponent } from './task-manager/tags/tags.component';
+
+
 import { RatingComponent } from './shared/rating/rating.component';
+import { HttpClientModule } from '@angular/common/http';
+import { TaskService } from './shared/services/task.service';
+import { TagsComponent } from './task-manager/tags/tags.component';
+import { NotFoundComponent } from './shared/not-found/not-found.component';
+import { TaskManagerModule } from './task-manager/task-manager.module';
 
 
 
 @NgModule({
   declarations: [
     AppComponent,
-    TaskManagerComponent,
-    TaskdeleteDialogComponent,
-    CreatetaskDialogComponent,
-    TaskupdateDialogComponent,
-    UpdateSaveDialogComponent,
+    RatingComponent,
     TagsComponent,
-    RatingComponent
+    NotFoundComponent
 
   ],
   imports: [
-    BrowserModule,
     AppRoutingModule,
     BrowserAnimationsModule,
-    MaterialModule
-   
+    TaskManagerModule
     
   ],
-  providers: [],
+  providers: [TaskService],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

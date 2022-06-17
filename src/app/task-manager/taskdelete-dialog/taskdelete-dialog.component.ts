@@ -1,5 +1,7 @@
-import { Component, OnInit } from '@angular/core';
-import { MatDialog } from '@angular/material/dialog';
+import { Component, Inject, OnInit } from '@angular/core';
+import { MatDialog, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { DialogParams, TaskModel } from 'src/app/shared/models/task-model';
+import { CreatetaskDialogComponent } from '../createtask-dialog/createtask-dialog.component';
 
 @Component({
   selector: 'app-taskdelete-dialog',
@@ -8,12 +10,30 @@ import { MatDialog } from '@angular/material/dialog';
 })
 export class TaskdeleteDialogComponent implements OnInit {
 
-  constructor(private dialog: MatDialog) { }
+  title: string = '';
+  existingTask: TaskModel; 
+
+  constructor(private dialog: MatDialog,
+              public dialogRef: MatDialogRef<TaskdeleteDialogComponent>,
+              @Inject(MAT_DIALOG_DATA) public data: DialogParams) 
+              { 
+                this.title = data.title;
+                this.existingTask = data.task;
+              }
 
   ngOnInit(): void {
   }
-  closedialog(){
-    this.dialog.closeAll();
+  
+  
+  okDialog(){
+    let taskData = this.existingTask.taskID;
+    console.log('taskData--', taskData)
+    this.noDialog(taskData) 
+  }
+  
+  
+  noDialog(data?: any){
+    this.dialogRef.close(data);
   }
 
 }

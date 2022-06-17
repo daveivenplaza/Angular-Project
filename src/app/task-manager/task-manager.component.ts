@@ -1,10 +1,15 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit, ViewChild } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { MatPaginator } from '@angular/material/paginator';
+import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
+import { Router } from '@angular/router';
+import { TaskModel } from '../shared/models/task-model';
+import { TaskService } from '../shared/services/task.service';
 import { CreatetaskDialogComponent } from './createtask-dialog/createtask-dialog.component';
 import { TaskdeleteDialogComponent } from './taskdelete-dialog/taskdelete-dialog.component';
 import { TaskupdateDialogComponent } from './taskupdate-dialog/taskupdate-dialog.component';
+
 @Component({
   selector: 'app-task-manager',
   templateUrl: './task-manager.component.html',
@@ -12,65 +17,96 @@ import { TaskupdateDialogComponent } from './taskupdate-dialog/taskupdate-dialog
 })
 export class TaskManagerComponent implements OnInit {
  
-  @ViewChild(MatPaginator)
-  paginator!: MatPaginator;
-  
-  constructor(private dialog: MatDialog) { }
+  @ViewChild(MatPaginator) paginator!: MatPaginator;
+  @ViewChild(MatSort) sort !: MatSort;
+
+  displayedColumns: string[] = ['taskID', 'taskName', 'tag', 'taskDescription', 'status', 'dateCreated','dateModified' ,'action'];
+  dataSource = new MatTableDataSource<TaskModel>();
+  //cloneDataSource: TaskModel[] = [];
+  searchKey: string = "";
+
+  constructor(private dialog: MatDialog, private ts: TaskService, private cdr: ChangeDetectorRef, private router: Router) { }
 
  
-  ngOnInit(): void {
-  }
-  displayedColumns: string[] = ['taskid', 'taskname', 'completionrating', 'taskdescription', 'status', 'datecreated','datemodified' , 'datecompleted' ,'action'];
-  dataSource = new MatTableDataSource<PeriodicElement>(ELEMENT_DATA);
+ngOnInit(): void {
+this.populate();
+}
 
-openDialog(){
-    const dialog = this.dialog.open(TaskdeleteDialogComponent, {
-      
-    })
-}
-openupdateDialog(){
-  const dialog = this.dialog.open(TaskupdateDialogComponent, {
+populate(): void{
+  this.ts.getTaskData().subscribe(data => {
+    if(data){
+      this.dataSource.data = data;
+    }
     
-  })
+  }) 
 }
-opencreateDialog(){
-  const dialog = this.dialog.open(CreatetaskDialogComponent, {
-    
-  })
+createDialog(){
+  this.router.navigate(['task']);
+  // this.dialog.open(CreatetaskDialogComponent, {
+  // })
+  // .afterClosed().subscribe((data: any) =>{
+  //   if(data){ 
+  //     console.log(data)
+  //     this.ts.getAddTask(data).subscribe(res => {
+  //       this.populate();
+  //       // this.cd.detectChanges();
+  //     })
+  //   }
+  // })
 
 }
+
+updateDialog(existingTask: TaskModel){
+  this.router.navigate(['task', existingTask.taskID]);
+  //let foundTaskById = this.searchTaskById(id)
+  // this.dialog.open(TaskupdateDialogComponent, {
+  //   data: {
+  //     task: existingTask
+  //   }
+  // }).afterClosed().subscribe((data: any) => {
+  //   if(data){
+  //     this.ts.getUpdateTasK(data, data.taskID).subscribe(res => {
+  //       this.populate
+  //       this.cdr.detectChanges();
+        
+  //     })
+  //   }
+  // })
+}
+
 search(event: Event){
   const filterValue = (event.target as HTMLInputElement).value;
   this.dataSource.filter = filterValue.trim().toLowerCase();
 }
 
+
+
 ngAfterViewInit() {
   this.dataSource.paginator = this.paginator;
+  
+}
+notifyEvent(event: number){
+  
+  console.log("Value from parent: ", event);
+
 }
 
+deleteDialog(existingTask: TaskModel){
+  this.dialog.open(TaskdeleteDialogComponent,{
+    data: {
+      title: 'Delete',
+      task: existingTask
+    }
+  }).afterClosed().subscribe((data: any) =>{
+    if(data){
+      this.deleteWithService(data);
+    }
+  })
 }
 
-export interface PeriodicElement {
-  taskid: number;
-  taskname: string;
-  completionrating: number;
-  taskdescription: string;
-  status: string;
-  datecreated: Date;
-  datemodified: string;
-  datecompleted: string;
+deleteWithService(data: any){
+  this.ts.getDeleteTask(data).subscribe(res => {
+    this.populate();
+  })
 }
-
-const ELEMENT_DATA: PeriodicElement[] = [
-  {taskid: 1, taskname: 'Washing', completionrating: 5, taskdescription: 'Wash Dishes', status: 'Completed', datecreated: new Date, datemodified:'05/09/2022', datecompleted:'05/10/2022'},
-  {taskid: 2, taskname: 'Reading', completionrating: 2, taskdescription: 'Read Manga', status: 'In Progress', datecreated:new Date, datemodified:'05/09/2022', datecompleted:'05/10/2022'},
-  {taskid: 3, taskname: 'Coding', completionrating: 3, taskdescription: 'Code Angular', status: 'New', datecreated:new Date, datemodified:'05/13/2022', datecompleted:'05/26/2022'},
-  {taskid: 4, taskname: 'Playing', completionrating: 4, taskdescription: 'Play ML', status: 'New', datecreated:new Date, datemodified:'05/21/2022', datecompleted:'05/27/2022'},
-  {taskid: 5, taskname: 'Washing', completionrating: 5, taskdescription: 'Wash Dishes', status: 'Completed', datecreated:new Date, datemodified:'05/09/2022', datecompleted:'05/10/2022'},
-  {taskid: 6, taskname: 'Reading', completionrating: 1, taskdescription: 'Read Manga', status: 'In Progress', datecreated:new Date, datemodified:'05/09/2022', datecompleted:'05/10/2022'},
-  {taskid: 7, taskname: 'Coding', completionrating: 3, taskdescription: 'Code Angular', status: 'New', datecreated:new Date, datemodified:'05/13/2022', datecompleted:'05/26/2022'},
-  {taskid: 8, taskname: 'Playing', completionrating: 5, taskdescription: 'Play ML', status: 'New', datecreated:new Date, datemodified:'05/21/2022', datecompleted:'05/27/2022'},
-  {taskid: 9, taskname: 'Coding', completionrating: 4, taskdescription: 'Code Angular', status: 'New', datecreated:new Date, datemodified:'05/13/2022', datecompleted:'05/26/2022'},
-  {taskid: 10, taskname: 'Playing', completionrating: 5, taskdescription: 'Play ML', status: 'New', datecreated:new Date, datemodified:'05/21/2022', datecompleted:'05/27/2022'},
-
-];
+}
